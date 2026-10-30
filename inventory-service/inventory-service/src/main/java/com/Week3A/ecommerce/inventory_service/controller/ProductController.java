@@ -3,6 +3,7 @@ package com.Week3A.ecommerce.inventory_service.controller;
 
 import com.Week3A.ecommerce.inventory_service.dto.ProductDto;
 import com.Week3A.ecommerce.inventory_service.service.ProductService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.client.ServiceInstance;
@@ -27,11 +28,11 @@ public class ProductController {
     private final RestClient restClient;  //To make 3rd party API calls. Make sure we have a bean of RestClient in AppConfig
 
     @GetMapping("/fetchOrders")
-    public String fetchFromOrdersService(){
+    public String fetchFromOrdersService(HttpServletRequest httpServletRequest){
         ServiceInstance orderService= discoveryClient.getInstances("order-service").getFirst();  //Here param is the spring.application.name from app.properties file
 
         String response= restClient.get()
-                .uri(orderService.getUri()+"/api/v1/orders/helloOrders")
+                .uri(orderService.getUri()+"/orders/core/helloOrders")
                 .retrieve()
                 .body(String.class);
 
