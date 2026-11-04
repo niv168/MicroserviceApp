@@ -1,0 +1,40 @@
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+  endpoint:
+    health:
+      show-details: always
+
+
+resilience4j:
+  retry:
+    instances:
+      inventoryRetry:
+        maxRetryAttempts: 3
+        waitDuration: 5s
+
+  ratelimiter:
+    instances:
+      inventoryRateLimiter:
+        limitForPeriod: 1
+        limitRefreshPeriod: 5s
+        timeoutDuration: 1s
+
+  circuitbreaker:
+    instances:
+      inventoryCircuitBreaker:
+        registerHealthIndicator: true #Expose circuit breaker health via actuator
+        slidingWindowSize: 10 #size of the sliding window for call recording
+        slidingWindowType: COUNT_BASED #Use count-based sliding window
+        minimumNumberOfCalls: 10 #Minm no of calls before calculating failure rate
+        failureRateThreshold: 50 #If 50% calls fail, the circuit goes to OPEN state
+        waitDurationInOpenState: 20s #Time the circuit stays open before moving to HALF_OPEN
+        permittedNumberOfCallsInHalfOpenState: 3 #Number of test calls in HALF_OPEN state
+        eventConsumerBufferSize: 10 #Buffer size for event logs
